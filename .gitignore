@@ -1,0 +1,5 @@
+.qodo
+.vs
+node_modules
+
+.env

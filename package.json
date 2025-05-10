@@ -1,0 +1,32 @@
+{
+  "name": "1.traducciones-openia",
+  "version": "1.0.0",
+  "description": "proyecto de traducciones usando JavaScript y el api de openai",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dieguidev/traducciones-openIA.git"
+  },
+  "author": "dieguidev",
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Dieguidev/traducciones-openIA/issues"
+  },
+  "homepage": "https://github.com/Dieguidev/traducciones-openIA#readme",
+  "dependencies": {
+    "1.traducciones-openia": "file:",
+    "axios": "^1.9.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "openai": "^4.97.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
