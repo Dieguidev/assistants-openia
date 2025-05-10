@@ -18,18 +18,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const contexto = `
-    Eres un asistente de soporte para el supermercado "Dieguidev".
-    Información del negocio:
-      - Ubicacion: Calle 2 s/n, El Agustino, Peru
-      - Horario: Lunes a Sabado de 9am a 10pm, Domingos cerrado
-      - Productos: Pan, Leche, Arroz, Aceite, Azucar, Sal, Harina, Fideos, Galletas, Jabón, Detergente ( solo y exclusivamente tenemos estos productos)
-      - Marcas: Gloria, Nestle, Don Vittorio, Laive, Alicorp, Molitalia, La Fama, Colgate, P&G
-      - Metodos de pago: Efectivo, Visa, Mastercard, American Express
-    Solo puedes responder preguntas sobre la tienda. Cualquier otra pregunta esta prohibida.
-  `;
-
-let conversations = {};
+let userThreads = {};
 
 app.post("/api/chatbot", async (req, res) => {
   const { userId, message } = req.body;
@@ -38,38 +27,23 @@ app.post("/api/chatbot", async (req, res) => {
     return res.status(400).json({ error: "Message is required" });
   }
 
-  if (!conversations[userId]) {
-    conversations[userId] = [];
-  }
-
-  conversations[userId].push({ role: "user", content: message });
-
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        { role: "system", content: contexto },
-        {
-          role: "system",
-          content:
-            "Debes responder de la forma mas corta y directa posible, usando los minimos tokens posibles.",
-        },
-        ...conversations[userId],
-      ],
-      max_tokens: 200,
-    });
-
-    const reply = response.choices[0].message.content;
-
-    conversations[userId].push({ role: "assistant", content: reply });
-
-    if (conversations[userId].length > 12) {
-      conversations[userId] = conversations[userId].slice(-10);
+    if (!userThreads[userId]) {
+      const thread = await openai.beta.threads.create();
+      userThreads[userId] = thread.id;
     }
 
-    console.log("Conversacion: ", conversations[userId]);
+    const threadId = userThreads[userId];
 
-    return res.json({ reply });
+    //*Añadido el mensaje al hilo del asistente
+    await openai.beta.threads.messages.create(threadId, {
+      role: "user",
+      content: message,
+    });
+
+    const myAssistant = await openai.beta.threads.runs.create(threadId, {
+      assistant_id: process.env.ASSISTANT_ID,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Internal server error" });
