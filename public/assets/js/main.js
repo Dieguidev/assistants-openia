@@ -15,7 +15,7 @@ const sendMessage = async () => {
   inputText.value = "";
 
   setTimeout(() => {
-    messagesContainer.innerHTML += `<div class="chat__message chat__message--bot chat__message--typing">Escribiendo...</div>`;
+    messagesContainer.innerHTML += `<div class="chat__message chat__message--bot chat__message--typing">Diego: <div class="loader"></div></div>`;
 
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }, 300);
